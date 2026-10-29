@@ -1,0 +1,27 @@
+# Model weights — too large for git
+models/*.pth
+models/*.pt
+models/*.h5
+
+# Datasets — never commit these
+data/
+*.zip
+*.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Gradio
+flagged/
+gradio_cached_examples/
