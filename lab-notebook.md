@@ -28,3 +28,10 @@ because nobody else will have recorded theirs.
 - Next: Phase 0 — Kaggle account, GitHub repo, 3B1B chapter 1.
 
 ---
+
+
+## 2026-10-29
+- Ran: 2-layer MLP (784 -> 256 -> 10), ReLU, Adam lr=1e-3, batch 128, 3 epochs, MNIST.
+- Result: 94.39% -> 96.41% -> 96.98% test accuracy.
+- Observation: biggest jump was epoch 1->2. Gains flattening by epoch 3.
+- Next: Phase 1 done. Break it on purpose to see a vanishing gradient.
