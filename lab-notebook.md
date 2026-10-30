@@ -46,3 +46,13 @@ because nobody else will have recorded theirs.
   Default PyTorch init isn't scaled for 20 layers - the weights shrink the signal too.
 - This is why He init / batch norm / skip connections exist. Test each on Day 7.
 - Saved: results/figures/grad_profile_20layer.png
+
+
+## 2026-10-30 (Day 2)
+- Ran: MLP vs CNN on MNIST, 3 epochs each, Adam lr=1e-3, batch 128.
+- MLP: 97.10% (203,530 params, ~8s/epoch)
+- CNN: 98.70% (421,642 params, ~8.5s/epoch)
+- CNN cut errors from 290 to 130 out of 10,000. Same compute time.
+- CNN has MORE total params, but conv layers are only ~18.8k. The Linear(3136,128) head
+  holds the rest. Convolutions do the visual work cheaply; the dense head is the expensive part.
+- Next: Day 3, attach the 140k Real/Fake Faces dataset.
