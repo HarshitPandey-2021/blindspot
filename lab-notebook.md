@@ -85,3 +85,28 @@ because nobody else will have recorded theirs.
 - Saved: models/detector_v3.pth, results/figures/training_curve_v3.png
 - Test set NOT touched. Reserved for the final measurement.
 - Next: Day 5 - confusion matrix, inspect errors, test the shortcut-learning worry from Day 3.
+
+
+
+## 2026-10-31 (Day 5) - analysis
+- Confusion matrix on 6,000 validation images (overall 0.9522):
+    is fake -> said fake 2,809 | said real   163   (94.52% of fakes caught)
+    is real -> said fake   124 | said real 2,904   (95.90% of reals passed)
+  Slightly weaker at catching fakes than clearing reals. The two errors are not equally
+  costly: 163 fakes through = verification bypass; 124 reals flagged = innocent users rejected.
+- 287 wrong out of 6,000. Confident mistakes cluster on OCCLUSIONS and ATYPICAL FACES:
+  sunglasses, glasses, hats, wide-open mouth, a young child.
+- SHORTCUT-LEARNING TEST (following the Day 3 worry that fakes are all tidy centred portraits):
+    original         0.9522
+    blurred          0.5085   <- collapses to chance
+    border removed   0.8553   <- mostly holds
+  Blur removes fine texture but preserves layout. Accuracy collapsed to random =>
+  the model is reading HIGH-FREQUENCY TEXTURE, not composition. Day 3 worry refuted.
+  Border removal cost ~10pts => background contributes some signal, but the face carries most.
+- PREDICTION FOR DAY 9 (made today, before building the attack):
+  FGSM produces a small high-frequency perturbation. This detector depends on high-frequency
+  texture. So it should be unusually EASY to fool - accuracy should collapse at very small
+  epsilon. To be tested.
+- IMPLIED LIMITATION: JPEG compression also removes high frequencies, so this detector would
+  likely degrade badly on re-compressed images. Worth testing if time allows.
+- Test set still untouched.
