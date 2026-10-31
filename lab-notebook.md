@@ -67,20 +67,21 @@ because nobody else will have recorded theirs.
   Possible shortcut learning - model might key on framing, not AI artifacts. Check on Day 5
   by inspecting misclassified images.
 - Next: Day 4, train the detector.
-
-
 ## 2026-10-31 (Day 4) - detector trained
-- v1: 20k @96px, lr 1e-3, 10 ep -> valid 0.9137. Valid swung +/-30pts between epochs.
-- Diagnosis: lr too high, model oscillating. Train acc is averaged across an epoch so it
+- v1: 20k @96px, lr 1e-3, 10 ep -> valid 0.9137. Valid swung +/-30pts while train climbed smoothly.
+- Diagnosis: lr too high, model oscillating. Train acc is averaged across the epoch so it
   hides this; valid is a single snapshot at epoch end.
 - v2: 20k @96px, lr 3e-4 + cosine + hflip, 25 ep -> valid 0.9050.
-  CONFIRMED: epochs 1-12 (lr>1.4e-4) still swung, epochs 13-25 climbed smoothly.
+  CONFIRMED: epochs 1-12 (lr>1.4e-4) still swung; 13-25 climbed smoothly.
   Stability fixed, peak unchanged => optimisation was NOT the bottleneck.
-- v3: 45k @128px, same settings -> valid 0.9453 (epoch 24). 4pt jump.
+- v3: 45k @128px, same settings -> best valid 0.9522 (epoch 25), train 0.9912.
   => data quantity + resolution were the real limit. StyleGAN artifacts are high-frequency
   and 96px was destroying them.
-- Final: train 0.9888 / valid 0.9435, best 0.9453. 4pt overfit gap (was 7pt in v2).
-- LOST both .pth files to a session timeout - /kaggle/working wiped, persistence was off.
-  Re-ran v3. Enabled "Variables and Files" persistence. New rule: download the .pth the
-  moment training ends.
+- Overfit gap down to 3.9pts (was 7pt at 20k images).
+- Earlier preload fix: epochs went from ~16 min (disk-bound) to 32s. /kaggle/input is
+  network-mounted and the dataset is 140k small JPEGs - ~31 imgs/sec.
+- Lost both .pth files to a session timeout (persistence was off). Re-ran. Persistence now on.
+  Rule: download the .pth the moment training ends.
+- Saved: models/detector_v3.pth, results/figures/training_curve_v3.png
 - Test set NOT touched. Reserved for the final measurement.
+- Next: Day 5 - confusion matrix, inspect errors, test the shortcut-learning worry from Day 3.
