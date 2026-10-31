@@ -56,3 +56,31 @@ because nobody else will have recorded theirs.
 - CNN has MORE total params, but conv layers are only ~18.8k. The Linear(3136,128) head
   holds the rest. Convolutions do the visual work cheaply; the dense head is the expensive part.
 - Next: Day 3, attach the 140k Real/Fake Faces dataset.
+
+
+## 2026-10-30 (Day 3)
+- Attached 140k Real/Fake Faces (xhlulu), mounted under /kaggle/input/datasets/xhlulu/...
+- ImageFolder: train 100,000 / valid 20,000 / test 20,000. Balanced. fake=0, real=1.
+- 128x128 RGB, batch shape [128,3,128,128].
+- Viewed samples: could not reliably tell fake from real by eye.
+- NOTE: real images look more varied (candid, odd angles); fakes are all centred portraits.
+  Possible shortcut learning - model might key on framing, not AI artifacts. Check on Day 5
+  by inspecting misclassified images.
+- Next: Day 4, train the detector.
+
+
+## 2026-10-31 (Day 4) - detector trained
+- v1: 20k @96px, lr 1e-3, 10 ep -> valid 0.9137. Valid swung +/-30pts between epochs.
+- Diagnosis: lr too high, model oscillating. Train acc is averaged across an epoch so it
+  hides this; valid is a single snapshot at epoch end.
+- v2: 20k @96px, lr 3e-4 + cosine + hflip, 25 ep -> valid 0.9050.
+  CONFIRMED: epochs 1-12 (lr>1.4e-4) still swung, epochs 13-25 climbed smoothly.
+  Stability fixed, peak unchanged => optimisation was NOT the bottleneck.
+- v3: 45k @128px, same settings -> valid 0.9453 (epoch 24). 4pt jump.
+  => data quantity + resolution were the real limit. StyleGAN artifacts are high-frequency
+  and 96px was destroying them.
+- Final: train 0.9888 / valid 0.9435, best 0.9453. 4pt overfit gap (was 7pt in v2).
+- LOST both .pth files to a session timeout - /kaggle/working wiped, persistence was off.
+  Re-ran v3. Enabled "Variables and Files" persistence. New rule: download the .pth the
+  moment training ends.
+- Test set NOT touched. Reserved for the final measurement.
