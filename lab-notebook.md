@@ -183,3 +183,120 @@ because nobody else will have recorded theirs.
   at d=10 then recovery at d=20 is probably run-to-run noise.
 
 - Saved: results/figures/grad_fixes_20layer.png, results/figures/depth_wall_by_fix.png
+
+
+
+
+## 2026-11-05 (Days 9-12) - attack and defence
+
+### Setup
+- New notebook 05_attack. Loaded detector_v3.pth, 241,794 params.
+- Paths resolved with glob (dataset mounted under xhlulu/, model under my own "Pathhh" dataset).
+- Preloaded 6,000 validation images @128px (seed=1, same sample as Day 5), 131s.
+- SANITY CHECK PASSED: baseline clean accuracy 0.9522, exactly matching Day 4.
+
+### FGSM implemented from scratch
+    x_adv = clamp(x + eps * sign(dLoss/dx), 0, 1)
+- Gradient taken w.r.t. the INPUT pixels, not the weights. Same backprop machinery,
+  stopped one step earlier.
+- sign() rather than the raw gradient bounds the per-pixel change to exactly eps,
+  which is what keeps the perturbation invisible.
+
+### Single-image demo (validation image #0, eps=0.01)
+- fake (0.9995 confident)  ->  real (1.0000 confident)
+- Largest pixel change 0.0100 = 2.6 / 255 brightness levels.
+- Images visually identical. Saved: results/figures/attack_exhibit.png
+
+### Epsilon sweep, undefended (6,000 images)
+    eps      (x/255)   FGSM      PGD-10
+    0.000    ( 0.0)    0.9522    0.9522
+    0.001    ( 0.3)    0.0090    0.0013
+    0.002    ( 0.5)    0.0000    0.0000
+    0.005    ( 1.3)    0.0000    0.0000
+    0.010    ( 2.6)    0.0000    0.0000
+    0.020    ( 5.1)    0.0050    0.0000
+    0.030    ( 7.6)    0.0545    0.0000
+    0.050    (12.8)    0.1517    0.0000
+    0.100    (25.5)    0.0110    0.0000
+
+- COLLAPSE IS TOTAL BY eps=0.002 (0.5/255). Not one of 6,000 images survived.
+- DAY 5 PREDICTION CONFIRMED. I predicted on 2026-10-31, before writing any attack code,
+  that this detector would break at unusually small epsilon because the blur test showed
+  it depends on high-frequency texture (0.9522 -> 0.5085 under blur), which is exactly the
+  band FGSM perturbs. Collapse at 0.5/255 is far below the 8/255 budget conventionally
+  used as the robustness benchmark for image classifiers.
+  CAVEAT: I did not train a reference model on this dataset, so I can say "extremely
+  fragile" and compare against the conventional benchmark budget, but I cannot claim
+  "more fragile than a comparable detector" - that was never measured.
+
+- NON-MONOTONIC FGSM at eps 0.02-0.05 (accuracy rises to 0.1517 then falls again).
+  Explanation: FGSM takes ONE large step along the sign of the gradient. On a curved loss
+  surface a large step can overshoot past the adversarial region. PGD, which takes many
+  small projected steps, stays at 0.0000 at every one of those epsilons - which confirms
+  the adversarial examples still exist there and FGSM is simply failing to find them.
+  This is a property of the ATTACK, not robustness of the model.
+
+### Both attack directions (FGSM)
+    eps      fake->real (evasion)   real->fake (false accusation)
+    0.002    0.0000                 0.0000
+    0.005    0.0000                 0.0000
+    0.010    0.0000                 0.0000
+    0.020    0.0101                 0.0000
+- Both harms are equally available to an attacker. Synthetic faces can be pushed past the
+  detector, and genuine photographs can be pushed into being flagged as fake.
+
+### Adversarial training (the defence)
+- 12 epochs, FGSM eps=0.01 generated from the current model each batch, clean and
+  adversarial concatenated into one batch, started from detector_v3.pth, 45,000 images,
+  Adam lr=3e-4 with cosine decay, horizontal flips retained.
+- Clean accuracy: 0.9522 -> 0.7072. COST OF THE DEFENCE: 24.5 points.
+
+    eps      undefended FGSM   defended FGSM   defended PGD
+    0.000    0.9522            0.7072          0.7072
+    0.001    0.0090            0.6853          0.6853
+    0.002    0.0000            0.6688          0.6673
+    0.005    0.0000            0.6173          0.6095
+    0.010    0.0000            0.5297          0.5080
+    0.020    0.0050            0.3885          0.3193
+    0.030    0.0545            0.2730          0.1712
+    0.050    0.1517            0.1353          0.0340
+    0.100    0.0110            0.0717          0.0013
+
+- Single image #0 at eps=0.01: undefended fake(0.999)->real(1.000);
+  defended fake(0.634)->fake(0.569). The defended model holds its verdict.
+
+### Reading the defence honestly
+- ABSOLUTE robustness is modest. At the trained eps=0.01 the defended model scores 0.5080
+  against PGD, versus a 0.5047 always-predict-real baseline. Against a full-strength
+  attack at the budget it was trained on, the defence buys essentially nothing.
+- RELATIVE robustness is large. Measured as accuracy retained against each model's own
+  clean baseline, at eps=0.005:
+      undefended  0.9522 -> 0.0000   (loses 100% of its accuracy)
+      defended    0.7072 -> 0.6095   (loses 14%)
+  Both numbers must be reported. The first says the defended model is a worse detector;
+  the second says it is a far more stable one.
+- Robustness is concentrated at and BELOW the trained epsilon and decays above it.
+- NO strong gradient masking: PGD <= FGSM at every epsilon, accuracy decreases
+  monotonically in eps, and accuracy reaches ~0 at large eps. All three are standard
+  checks and all three pass. [Transfer and strong-PGD checks: ____]
+- My guide predicted the pattern "holds against FGSM, collapses against PGD". I did NOT
+  observe that. The FGSM/PGD gap is small below eps=0.01 and only opens beyond it
+  (at 0.05: 0.1353 vs 0.0340), which is the expected behaviour of a stronger attack
+  outside the trained budget, not a sign of a fake defence.
+
+### Diagnostics (Day 13)
+- BN recalibration on clean data: 0.7072 -> ____  (recovered ____)
+- Transfer attack (craft on undefended, test on defended), eps=0.01: white-box ____ vs transfer ____
+- Stronger PGD (40 steps, 2 restarts) at eps=0.01: ____ (vs PGD-10 0.5080)
+- 8-bit quantization: at eps=0.005 float ____ vs quantized ____
+  => real-world headline epsilon is ____
+- Blur sensitivity: fraction of accuracy lost at sigma=2.0,
+  undefended ____ vs defended ____
+  => high-frequency hypothesis ____SUPPORTED / NOT SUPPORTED____
+
+### Open and untested
+- Did not retrain at a smaller eps, so I cannot separate "eps=0.01 was too aggressive"
+  from "this architecture simply cannot be both accurate and robust here".
+- Did not test JPEG compression (only 8-bit rounding).
+- Single seed throughout.
+- Test set still untouched.
