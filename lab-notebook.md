@@ -222,11 +222,14 @@ Every experiment, dated. Failures included deliberately.
 - Corrected the defence chart title from "restores robustness" to "trades clean accuracy
   for partial robustness" — the original overclaimed.
 - Saved: frequency_reliance.png
+### 7 Nov — Final test-set evaluation (held out since Day 3, touched once)
 
-## 2026-11-__ (Day 14) — FINAL TEST SET, touched once
-- undefended clean: ____     (valid 0.9522)
-- defended   clean: ____     (valid 0.7072)
-- eps 0.002: undef FGSM ____ PGD ____ | def FGSM ____ PGD ____
-- eps 0.005: undef FGSM ____ PGD ____ | def FGSM ____ PGD ____
-- eps 0.010: undef FGSM ____ PGD ____ | def FGSM ____ PGD ____
-- Test numbers close to validation => nothing was overfit to the validation set.
+Majority-class baseline: 0.5033
+
+| Model | Clean | ε=0.002 FGSM / PGD | ε=0.005 FGSM / PGD | ε=0.010 FGSM / PGD |
+|---|---|---|---|---|
+| Undefended | 0.9558 | 0.0000 / 0.0000 | 0.0000 / 0.0000 | 0.0000 / 0.0000 |
+| Defended   | 0.7098 | 0.6703 / 0.6688 | 0.6118 / 0.6040 | 0.5292 / 0.5043 |
+
+Test tracks validation within 0.4 points on every row — no validation overfitting.
+PGD ≤ FGSM everywhere, monotonic in ε: no gradient masking.
