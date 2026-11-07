@@ -1,5 +1,5 @@
 # Model weights — too large for git
-models/*.pth
+models/detector_v1_96px_OLD.pth
 models/*.pt
 models/*.h5
 
