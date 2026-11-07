@@ -220,5 +220,4 @@ blindspot/
 - Goodfellow, Shlens & Szegedy (2014), *Explaining and Harnessing Adversarial Examples* — FGSM
 - Madry et al. (2017), *Towards Deep Learning Models Resistant to Adversarial Attacks* — PGD
 - Karras et al. (2019), *A Style-Based Generator Architecture for GANs* — StyleGAN
-```
 
