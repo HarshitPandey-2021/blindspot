@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BlindSpot — A2 Poster</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @page { size: 420mm 594mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 420mm; height: 594mm; background: #fff; color: #1a1424;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { display: flex; flex-direction: column; }
+  @media print { html, body { overflow: hidden; } }
+
+  /* ── institutional strip ── */
+  .inst { display: flex; align-items: center; gap: 7mm; padding: 6mm 14mm 5mm;
+          border-bottom: 1mm solid #c026d3; }
+  .inst img.logo { height: 24mm; width: auto; }
+  .inst .txt { flex: 1; }
+  .inst .fac { font-size: 18pt; font-weight: 800; letter-spacing: -.015em; color: #4c1d95; }
+  .inst .uni { font-size: 14pt; font-weight: 600; color: #1a1424; margin-top: .6mm; }
+  .inst .dep { font-size: 10.5pt; color: #5c5168; margin-top: 1.6mm; line-height: 1.4; }
+
+  /* ── title band ── */
+  .band { padding: 8mm 14mm;
+    background: linear-gradient(104deg,#6d28d9 0%,#c026d3 54%,#f472b6 100%); color: #fff; }
+  .band h1 { font-size: 70pt; font-weight: 800; letter-spacing: -.035em; line-height: .94; }
+  .band .sub { font-size: 17pt; opacity: .95; margin-top: 3mm; font-weight: 400; }
+
+  /* ── body ── */
+  .hero { padding: 6mm 14mm 0; }
+  .hero img { width: 100%; max-height: 112mm; object-fit: contain; display: block; }
+  .hero .cap { text-align: center; font-size: 10.5pt; margin-top: 2.5mm; color: #4b3f5c; }
+  .hero .cap b { color: #c026d3; }
+
+  .cols { display: flex; gap: 9mm; padding: 6mm 14mm 0; }
+  .col { flex: 1; }
+  h2 { font-size: 16.5pt; font-weight: 800; color: #6d28d9; margin-bottom: 2mm; }
+  h2 .n { color: #c026d3; }
+  p { font-size: 11pt; line-height: 1.45; margin-bottom: 2.6mm; }
+  ul { font-size: 10.5pt; line-height: 1.42; margin: 0 0 2.6mm 4.5mm; }
+  li { margin-bottom: 1.1mm; }
+  .sec { margin-bottom: 5mm; }
+
+  .eq { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12pt;
+    background: #faf3ff; border: .3mm solid #e9d5ff; border-left: 1.2mm solid #c026d3;
+    padding: 3mm 4mm; margin-bottom: 2.6mm; }
+
+  .fig img { width: 100%; max-height: 70mm; object-fit: contain; display: block;
+    border: .25mm solid #ece6f3; }
+  .fig .cap { font-size: 8pt; color: #6b5f7a; text-align: center; margin-top: 1.2mm;
+    letter-spacing: .09em; text-transform: uppercase; }
+
+  .stats { display: flex; gap: 5mm; padding: 3mm 14mm 0; }
+  .stat { flex: 1; border-radius: 3mm; padding: 4.5mm 3mm; text-align: center;
+    background: linear-gradient(145deg,#faf3ff,#f5e9ff); border: .3mm solid #e9d5ff; }
+  .stat .n { display: block; font-size: 26pt; font-weight: 850; color: #c026d3; line-height: 1; }
+  .stat .t { display: block; font-size: 8pt; color: #6b5f7a; margin-top: 2mm;
+    letter-spacing: .09em; }
+
+  .rule { height: .3mm; background: #ece6f3; margin: 5mm 14mm 0; }
+  .foot { display: flex; gap: 8mm; padding: 4.5mm 14mm 0; }
+  .foot .box { flex: 1; }
+  .foot h3 { font-size: 12pt; font-weight: 800; color: #6d28d9; margin-bottom: 1.5mm; }
+  .foot p, .foot li { font-size: 9.5pt; line-height: 1.38; }
+  .foot ul { margin-left: 4mm; }
+
+  .qrbox { width: 52mm; text-align: center; }
+  #qr img, #qr canvas { width: 36mm !important; height: 36mm !important; }
+  .qrbox .url { font-size: 9.5pt; font-weight: 700; color: #c026d3; margin-top: 2mm;
+    word-break: break-all; }
+  .qrbox .lbl { font-size: 7.5pt; color: #6b5f7a; letter-spacing: .1em; margin-top: 1mm; }
+
+  .refs { padding: 3.5mm 14mm 4mm; font-size: 8pt; color: #6b5f7a; line-height: 1.38; }
+
+  /* ── credits bar, pinned to the bottom ── */
+  .credits { margin-top: auto; display: flex; align-items: center;
+    padding: 5.5mm 14mm; background: #f7f0ff; border-top: 1mm solid #c026d3; }
+  .credits .c { flex: 1; }
+  .credits .c.right { text-align: right; }
+  .credits .lbl { font-size: 8.5pt; letter-spacing: .13em; color: #7c6b8c;
+    text-transform: uppercase; margin-bottom: 1.2mm; }
+  .credits .nm { font-size: 15pt; font-weight: 800; color: #1a1424; letter-spacing: -.01em; }
+  .credits .dt { font-size: 10.5pt; color: #5c5168; margin-top: .8mm; }
+</style>
+</head>
+<body>
+
+<div class="inst">
+  <img class="logo" src="logo.png" alt="" onerror="this.style.display='none'">
+  <div class="txt">
+    <div class="fac">Faculty of Engineering &amp; Technology</div>
+    <div class="uni">University of Lucknow</div>
+    <div class="dep">Department of Computer Science &amp; Engineering &nbsp;·&nbsp;
+      B.Tech CSE (Artificial Intelligence) &nbsp;·&nbsp; Session 2026–27 &nbsp;·&nbsp;
+      Deep Learning (NAI-701)</div>
+  </div>
+</div>
+
+<div class="band">
+  <h1>BlindSpot</h1>
+  <div class="sub">Breaking an AI-generated-face detector with noise you cannot see — and then fixing it</div>
+</div>
+
+<div class="hero">
+  <img src="../results/figures/attack_exhibit.png" alt="Same face, opposite verdicts">
+  <div class="cap">The same face — <b>and this person does not exist; it is StyleGAN output.</b>
+  The left image is called <b>AI-generated</b>, the right <b>real</b>, after changing every pixel
+  by at most <b>1 brightness level out of 255</b>.</div>
+</div>
+
+<div class="cols">
+  <div class="col">
+
+    <div class="sec">
+      <h2><span class="n">1.</span> The problem</h2>
+      <p>Platforms use neural networks to flag AI-generated images; banks use them to verify that an uploaded selfie is a real person. We delegate this judgment to machines <b>because humans cannot make it</b> — most people cannot tell a StyleGAN face from a photograph.</p>
+      <p>If that machine's answer can be reversed by a change nobody can see, there is no backstop. The reviewer sees an ordinary image, because nothing visible has changed.</p>
+    </div>
+
+    <div class="sec">
+      <h2><span class="n">2.</span> The detector</h2>
+      <p>A CNN trained from scratch on <b>140,000 face images</b> — 70,000 real photographs (Flickr / FFHQ) and 70,000 StyleGAN-generated.</p>
+      <p>Four blocks of <b>Conv2d(3×3) → BatchNorm → ReLU → MaxPool</b>, channels 3→32→64→128→128, image 128×128 down to 8×8, then global average pooling and one linear layer. <b>241,794 parameters.</b> Adam, lr 3e-4 with cosine decay, 25 epochs on 45,000 images.</p>
+      <p><b>95.22%</b> accuracy on 6,000 unseen validation images.</p>
+    </div>
+
+    <div class="sec">
+      <h2><span class="n">3.</span> The attack</h2>
+      <div class="eq">x<sub>adv</sub> = clamp( x + ε · sign( ∂L/∂x ) , 0, 1 )</div>
+      <p>Training computes the gradient of the loss with respect to the <b>weights</b>. This computes it with respect to the <b>input pixels</b> and steps the other way — the same backpropagation, stopped one step earlier.</p>
+      <p>Taking the <b>sign</b> rather than the raw gradient bounds every pixel to exactly ε regardless of gradient steepness. That bound is what keeps the change invisible. FGSM and PGD were both implemented from scratch.</p>
+    </div>
+
+  </div>
+
+  <div class="col">
+
+    <div class="sec">
+      <h2><span class="n">4.</span> How much noise does it take?</h2>
+      <div class="fig">
+        <img src="../results/figures/epsilon_sweep.png" alt="Accuracy vs attack strength">
+        <div class="cap">Accuracy vs attack strength</div>
+      </div>
+      <p style="margin-top:2.6mm">Collapse is total by <b>ε = 0.002</b> — half a brightness level. Not one of 6,000 images survived. At ε = 0.005, which still survives being saved as a real 8-bit file, accuracy is still exactly zero.</p>
+      <p>At 0% the detector is not merely broken — it is <b>perfectly wrong</b>. Invert every answer and you score 100%.</p>
+    </div>
+
+    <div class="sec">
+      <h2><span class="n">5.</span> The defence</h2>
+      <div class="fig">
+        <img src="../results/figures/defence_comparison.png" alt="Defended vs undefended">
+        <div class="cap">Adversarial training: the trade</div>
+      </div>
+      <p style="margin-top:2.6mm">Adversarial training generates attacked images during learning and trains on them alongside clean ones. Below the budget it was trained on, the defended model keeps roughly <b>half its skill</b> where the undefended one loses all of it — at a cost of <b>24.5 points</b> of clean accuracy.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="n">95.22%</span><span class="t">DETECTOR ACCURACY</span></div>
+  <div class="stat"><span class="n">0.00%</span><span class="t">UNDER ATTACK</span></div>
+  <div class="stat"><span class="n">1 / 255</span><span class="t">PIXELS CHANGED BY</span></div>
+  <div class="stat"><span class="n">6,000</span><span class="t">IMAGES TESTED</span></div>
+</div>
+
+<div class="rule"></div>
+
+<div class="foot">
+  <div class="box">
+    <h3>Key findings</h3>
+    <ul>
+      <li><b>The detector lives on high-frequency texture.</b> Blurring the input drops it from 95.2% to 50.9% — chance.</li>
+      <li><b>That allowed a prediction.</b> Recorded 31 Oct, before any attack code existed: it should break at an unusually small budget. Confirmed 5 Nov.</li>
+      <li><b>The defence shifted the model onto coarser features</b> — under blur it loses 5% where the undefended model loses 47%.</li>
+      <li><b>Both attack directions work.</b> Fake→real is evasion; real→fake flags an innocent person.</li>
+      <li><b>Vanishing and exploding gradients, both measured.</b> At 20 layers the signal reaching layer 1 is 1.8e-19. He initialisation was the biggest fix; residual connections without batch norm gave gradients ~1000× too large.</li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h3>Identity is not provenance</h3>
+    <p>The attack does not change <i>who</i> is in the photograph — a face stays the same face, and a human sees no difference. It flips the answer to a different question: <b>was this image photographed, or synthesized?</b> That is precisely the question humans cannot answer unaided, which is why it was delegated to a machine in the first place.</p>
+    <h3 style="margin-top:2.8mm">What this does not show</h3>
+    <ul>
+      <li>Not that this detector is <i>more</i> fragile than others — no reference model was trained.</li>
+      <li>Not that the attack survives JPEG. Only 8-bit rounding was tested.</li>
+      <li>Not black-box — every attack had full access to the weights.</li>
+      <li>Single seed; ε = 0.01 as a training budget was never isolated.</li>
+    </ul>
+  </div>
+
+  <div class="qrbox">
+    <div id="qr"></div>
+    <div class="url">blindspott.streamlit.app</div>
+    <div class="lbl">TRY THE LIVE DEMO</div>
+  </div>
+</div>
+
+<div class="refs">
+  <b>References:</b> Goodfellow, Shlens &amp; Szegedy (2014) <i>Explaining and Harnessing Adversarial Examples</i> · Madry et al. (2017) <i>Towards Deep Learning Models Resistant to Adversarial Attacks</i> · Karras et al. (2019) <i>A Style-Based Generator Architecture for GANs</i> · Dataset: 140k Real and Fake Faces, Kaggle · Code: github.com/HarshitPandey-2021/blindspot
+</div>
+
+<div class="credits">
+  <div class="c">
+    <div class="lbl">Submitted by</div>
+    <div class="nm">Harshit Pandey</div>
+    <div class="dt">Roll No. 2410013155315 · B.Tech CSE (AI)</div>
+  </div>
+  <div class="c right">
+    <div class="lbl">Under the guidance of</div>
+    <div class="nm">Dr. Prem Shanker Yadav</div>
+    <div class="dt">Assistant Professor, Dept. of CSE</div>
+  </div>
+</div>
+
+<script>
+  new QRCode(document.getElementById("qr"), {
+    text: "https://blindspott.streamlit.app/",
+    width: 400, height: 400,
+    colorDark: "#1a1424", colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+
+</body>
+</html>
