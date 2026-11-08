@@ -14,7 +14,7 @@ Adversarial training recovers about half the model's skill at small perturbation
 **24.5 points** of clean accuracy.
 
 Deep Learning (NAI-701) · solo semester project · Harshit Pandey · University of Lucknow
-
+ 
 ---
 
 ## Results
