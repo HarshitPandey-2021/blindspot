@@ -13,7 +13,7 @@ and one that survives being saved as an ordinary 8-bit image — drives it to **
 Adversarial training recovers about half the model's skill at small perturbations, and costs
 **24.5 points** of clean accuracy.
 
-Deep Learning (NAI-701) · solo semester project · Harshit Pandey · University of Lucknow
+Deep Learning (NAI-701) · DL project · Harshit Pandey · University of Lucknow
  
 ---
 
